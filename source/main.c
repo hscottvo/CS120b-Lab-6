@@ -99,8 +99,11 @@ void main() {
     PORTB = 0x00;
     TimerSet(300);
     TimerOn();
+    unsigned char tmpB = 0x00;
     rotate_state = rotate_init;
     while(1) {
+        tmpB = ~tmpB;
+        PORTB = tmpB;
         while(!TimerFlag);
         rotate_tick();
         TimerFlag = 0;
