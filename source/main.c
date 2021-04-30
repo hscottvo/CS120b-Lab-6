@@ -53,16 +53,58 @@ void TimerSet(unsigned long M) {
     _avr_timer_cntcurr = _avr_timer_M;
 }
 
+enum rotate_states {rotate_init, rotate_zero, rotate_one, rotate_two} rotate_state;
+
+rotate_tick() {
+    switch(rotate_state) {
+        case(rotate_init):
+            rotate_state = rotate_zero;
+            break;
+        case(rotate_zero):
+            rotate_state = rotate_one;
+            break;
+        case(rotate_one):
+            rotate_state = rotate_two;
+            break;
+        case(rotate_two):
+            rotate_state = rotate_zero;
+            break;
+
+        default:
+            rotate_state = rotate_init
+    }
+
+        switch(rotate_state) {
+        case(rotate_init):
+            PORTB = 0;
+            break;
+        case(rotate_zero):
+            PORTB = 0x01;
+            break;
+        case(rotate_one):
+            PORTB = 0x02;
+            break;
+        case(rotate_two):
+            PORTB = 0x04
+            break;
+
+        default:
+    }
+
+}
+
 void main() {
     DDRB = 0xFF;
     PORTB = 0x00;
     TimerSet(1000);
     TimerOn();
     unsigned char tmpB = 0x00;
+    rotate_state = rotate_init;
     while(1) {
         tmpB = ~tmpB;
         PORTB = tmpB;
         while(!TimerFlag);
+        rotate_tick();
         TimerFlag = 0;
     }
 }
