@@ -8,7 +8,7 @@
  *	code, is my own original work.
  */
 #include <avr/io.h>
-#include <avr/interrupt.h>
+#include<avr/interrupt.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
@@ -42,31 +42,27 @@ void TimerISR() {
 
 ISR(TIMER1_COMPA_vect) {
     _avr_timer_cntcurr--;
-    if (_avr_timer_cntcurr == 0) {
+    if(_avr_timer_cntcurr == 0) {
         TimerISR();
         _avr_timer_cntcurr = _avr_timer_M;
     }
 }
 
-void TimerSet (unsigned long M ) {
+void TimerSet(unsigned long M) {
     _avr_timer_M = M;
     _avr_timer_cntcurr = _avr_timer_M;
 }
 
-
-int main(void) {
-    /* Insert DDR and PORT initializations */
+void main() {
     DDRB = 0xFF;
     PORTB = 0x00;
     TimerSet(1000);
     TimerOn();
     unsigned char tmpB = 0x00;
-    /* Insert your solution below */
-    while (1) {
+    while(1) {
         tmpB = ~tmpB;
         PORTB = tmpB;
-        while (TimerFlag);
+        while(!TimerFlag);
         TimerFlag = 0;
     }
-    return 1;
 }
