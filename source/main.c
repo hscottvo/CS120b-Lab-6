@@ -87,8 +87,9 @@ rotate_tick() {
         case(rotate_two):
             PORTB = 0x04
             break;
-
         default:
+            PORTB = 0;
+            break;
     }
 
 }
