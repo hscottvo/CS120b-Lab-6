@@ -86,7 +86,7 @@ void rotate_tick() {
             break;
         case(rotate_reset):
             if((PINA & 0x01) == 0x01) rotate_state = rotate_reset;
-            else rotate_state = rotate_init;
+            else rotate_state = rotate_zero;
             break;
         default:
             rotate_state = rotate_init;
