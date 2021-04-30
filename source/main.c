@@ -61,31 +61,31 @@ void rotate_tick() {
             rotate_state = rotate_zero;
             break;
         case(rotate_zero):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_freeze;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_one_front;
             break;
         case(rotate_one_front):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_freeze;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_two;
             break;
         case(rotate_one_back):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_freeze;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_zero;
             break;
         case(rotate_two):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_freeze;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_one_back;
             break;
         case(rotate_freeze):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_freeze;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_freeze_wait;
             break;
         case(rotate_freeze_wait):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_reset;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_reset;
             else rotate_state = rotate_freeze_wait;
             break;
         case(rotate_reset):
-            if(PINA & (0x01 == 0x01)) rotate_state = rotate_reset;
+            if((PINA & 0x01) == 0x01) rotate_state = rotate_reset;
             else rotate_state = rotate_init;
             break;
         default:
