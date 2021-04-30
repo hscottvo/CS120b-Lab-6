@@ -127,6 +127,6 @@ void main() {
         while(!TimerFlag);
         rotate_tick();
         TimerFlag = 0;
-        if ((PINA & 0x01) == 0x01) PORTB = PORTB | 0x10
+        if ((PINA & 0x01) == 0x01) PORTB = PORTB | 0x10;
     }
 }
