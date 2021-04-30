@@ -53,70 +53,78 @@ void TimerSet(unsigned long M) {
     _avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum rotate_states {rotate_init, rotate_zero, rotate_one_front, rotate_one_back, rotate_two, rotate_freeze, rotate_freeze_wait, rotate_reset} rotate_state;
+enum counter_states {counter_init, counter_add, counter_inc, counter_sub, counter_dec, counter_reset} counter_state;
 unsigned char tmpA = 0;
-unsigned char press_flag = 0;
+unsigned char hold_timer = 0;
 
-void rotate_tick() {
-    switch(rotate_state) {
-        case(rotate_init):
-            rotate_state = rotate_zero;
-            break;
-        case(rotate_zero):
-            if((tmpA & 0x01) == 0x01) {
-                rotate_state = rotate_freeze;
+void counter_tick() {
+    switch(counter_state) {
+        case counter_init:
+            if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
+            else if ((tmpA & 0x03) == 0x01) counter_state = counter_add;
+            else if ((tmpA & 0x03) == 0x02) counter_state = counter_sub;
+            else counter_state = counter_reset;
+        case counter_add:
+            counter_state = counter_inc;
+        case counter_inc:
+            if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
+            else if ((tmpA & 0x03) == 0x01) {
+                counter_state = counter_inc;
+                hold_timer++;
             }
-            else rotate_state = rotate_one_front;
-            break;
-        case(rotate_one_front):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
-            else rotate_state = rotate_two;
-            break;
-        case(rotate_one_back):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
-            else rotate_state = rotate_zero;
-            break;
-        case(rotate_two):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
-            else rotate_state = rotate_one_back;
-            break;
-        case(rotate_freeze):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
-            else rotate_state = rotate_freeze_wait;
-            break;
-        case(rotate_freeze_wait):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_reset;
-            else rotate_state = rotate_freeze_wait;
-            break;
-        case(rotate_reset):
-            if((tmpA & 0x01) == 0x01) rotate_state = rotate_reset;
-            else rotate_state = rotate_zero;
-            break;
-        default:
-            rotate_state = rotate_init;
+            else if ((tmpA & 0x03) == 0x02) counter_state = counter_init;
+            else counter_state = counter_reset;
+        case counter_sub:
+            counter_state = counter_dec;
+        case counter_dec:
+            if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
+            else if ((tmpA & 0x03) == 0x01) counter_state = counter_init;
+            else if ((tmpA & 0x03) == 0x02) {
+                counter_state = counter_dec;
+                hold_timer++;
+            }
+            else counter_state = counter_reset;
+        case counter_reset:
+            if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
+            else counter_state = counter_reset;
+        default: 
+            counter_state = counter_init;
     }
 
-        switch(rotate_state) {
-        case(rotate_init):
-            PORTB = 0x01;
+    switch(counter_state) {
+        case counter_init:
             break;
-        case(rotate_zero):
-            PORTB = 0x01;
+        case counter_add:
+            if (PORTB < 9) {
+                PORTB = PORTB + 1;
+            }
             break;
-        case(rotate_one_front):
-        case(rotate_one_back):
-            PORTB = 0x02;
+        case counter_inc:
+            if (hold_timer >= 9) {
+                hold_timer = 0;
+                if (PORTB < 9) {
+                    PORTB = PORTB + 1;
+                }
+            }
             break;
-        case(rotate_two):
-            PORTB = 0x04;
+        case counter_sub:
+            if (PORTB > 0) {
+                PORTB = PORTB - 1;
+            }
             break;
-        case(rotate_freeze):
-        case(rotate_freeze_wait):
-        case(rotate_reset):
+        case counter_dec:
+            if (hold_timer >= 9) {
+                hold_timer = 0;
+                if(PORTB > 0) {
+                    PORTB = PORTB - 1;
+                }
+            }
             break;
-        default:
-            PORTB = 0x01;
-            break;
+
+        case counter_reset:
+            PORTB = 0x00;
+        default: 
+            PORTB = 0;
     }
 
 }
@@ -124,13 +132,14 @@ void rotate_tick() {
 void main() {
     DDRA = 0x00; PORTA = 0xFF;
     DDRB = 0xFF; PORTB = 0x00;
-    TimerSet(300);
+    TimerSet(100);
     TimerOn();
-    rotate_state = rotate_init;
+    counter_state = counter_init;
+    PORTB = 0x07;
     while(1) {
         tmpA = ~PINA;
         while(!TimerFlag);
-        rotate_tick();
+        counter_tick();
         TimerFlag = 0;
     }
 }
