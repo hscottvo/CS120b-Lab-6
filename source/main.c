@@ -54,6 +54,7 @@ void TimerSet(unsigned long M) {
 }
 
 enum rotate_states {rotate_init, rotate_zero, rotate_one_front, rotate_one_back, rotate_two, rotate_freeze, rotate_freeze_wait, rotate_reset} rotate_state;
+unsigned char tmpA = 0;
 
 void rotate_tick() {
     switch(rotate_state) {
@@ -61,31 +62,31 @@ void rotate_tick() {
             rotate_state = rotate_zero;
             break;
         case(rotate_zero):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_one_front;
             break;
         case(rotate_one_front):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_two;
             break;
         case(rotate_one_back):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_zero;
             break;
         case(rotate_two):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_one_back;
             break;
         case(rotate_freeze):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_freeze;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_freeze;
             else rotate_state = rotate_freeze_wait;
             break;
         case(rotate_freeze_wait):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_reset;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_reset;
             else rotate_state = rotate_freeze_wait;
             break;
         case(rotate_reset):
-            if((PINA & 0x01) == 0x01) rotate_state = rotate_reset;
+            if((tmpA & 0x01) == 0x01) rotate_state = rotate_reset;
             else rotate_state = rotate_zero;
             break;
         default:
@@ -118,12 +119,13 @@ void rotate_tick() {
 }
 
 void main() {
-    DDRB = 0xFF;
-    PORTB = 0x00;
+    DDRA = 0x00; PORTA = 0xFF;
+    DDRB = 0xFF; PORTB = 0x00;
     TimerSet(300);
     TimerOn();
     rotate_state = rotate_init;
     while(1) {
+        tmpA = ~PINA;
         while(!TimerFlag);
         rotate_tick();
         TimerFlag = 0;
