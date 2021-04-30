@@ -53,7 +53,7 @@ void TimerSet(unsigned long M) {
     _avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum rotate_states {rotate_init, rotate_zero, rotate_one_front, rotate_one_back, rotate_two, rotate_freeze, rotate_freeze_wait} rotate_state;
+enum rotate_states {rotate_init, rotate_zero, rotate_one_front, rotate_one_back, rotate_two, rotate_freeze, rotate_freeze_wait, rotate_reset} rotate_state;
 
 rotate_tick() {
     switch(rotate_state) {
@@ -61,18 +61,33 @@ rotate_tick() {
             rotate_state = rotate_zero;
             break;
         case(rotate_zero):
-            rotate_state = rotate_one_front;
+            if(A0) rotate_state = rotate_freeze;
+            else rotate_state = rotate_one_front;
             break;
         case(rotate_one_front):
-            rotate_state = rotate_two;
+            if(A0) rotate_state = rotate_freeze;
+            else rotate_state = rotate_two;
             break;
         case(rotate_one_back):
-            rotate_state = rotate_zero;
+            if(A0) rotate_state = rotate_freeze;
+            else rotate_state = rotate_zero;
             break;
         case(rotate_two):
-            rotate_state = rotate_one_back;
+            if(A0) rotate_state = rotate_freeze;
+            else rotate_state = rotate_one_back;
             break;
-
+        case(rotate_freeze):
+            if(A0) rotate_state = rotate_freeze;
+            else rotate_state = rotate_freeze_wait;
+            break;
+        case(rotate_freeze_wait):
+            if(A0) rotate_state = rotate_reset;
+            else rotate_state = rotate_freeze_wait;
+            break;
+        case(rotate_reset):
+            if(A0) rotate_state = rotate_reset;
+            else rotate_state = rotate_init;
+            break;
         default:
             rotate_state = rotate_init;
     }
@@ -90,6 +105,11 @@ rotate_tick() {
             break;
         case(rotate_two):
             PORTB = 0x04;
+            break;
+        case(rotate_freeze):
+        case(rotate_freeze_wait):
+        case(rotate_reset):
+            PORTB = 0x01;
             break;
         default:
             PORTB = 0;
