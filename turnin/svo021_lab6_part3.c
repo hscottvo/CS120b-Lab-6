@@ -1,11 +1,12 @@
 /*	Author: lab
  *  Partner(s) Name: Scott Vo
- *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Lab Section: 021
+ *	Assignment: Lab 6  Exercise 3
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
+ *  Demo link: https://youtu.be/-m6iHqFt0t8
  */
 #include <avr/io.h>
 #include<avr/interrupt.h>
