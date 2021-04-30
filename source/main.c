@@ -71,7 +71,7 @@ rotate_tick() {
             break;
 
         default:
-            rotate_state = rotate_init
+            rotate_state = rotate_init;
     }
 
         switch(rotate_state) {
