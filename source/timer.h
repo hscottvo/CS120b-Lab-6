@@ -1,7 +1,7 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
-#include <avxintrin.h>/interrupt.h>
+#include <avr/interrupt.h>
 
 volatile unsigned char TimerFlag = 0;
 
@@ -16,6 +16,7 @@ void TimerOn() {
     TIMSK1 = 0x02;
 
     TCNT1 = 0;
+
     _avr_timer_cntcurr = avr_timer_M;
 
     SREG |= 0x80;
