@@ -139,7 +139,7 @@ void main() {
     while(1) {
         tmpA = ~PINA;
         while(!TimerFlag);
-        PORTB = PORTB & (tmpA << 4);
+        PORTB = PORTB | (tmpA << 4);
         counter_tick();
         TimerFlag = 0;
     }
