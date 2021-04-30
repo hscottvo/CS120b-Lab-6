@@ -97,7 +97,7 @@ rotate_tick() {
 void main() {
     DDRB = 0xFF;
     PORTB = 0x00;
-    TimerSet(1000);
+    TimerSet(300);
     TimerOn();
     rotate_state = rotate_init;
     while(1) {
