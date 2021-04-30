@@ -64,8 +64,10 @@ void counter_tick() {
             else if ((tmpA & 0x03) == 0x01) counter_state = counter_add;
             else if ((tmpA & 0x03) == 0x02) counter_state = counter_sub;
             else counter_state = counter_reset;
+            break;
         case counter_add:
             counter_state = counter_inc;
+            break;
         case counter_inc:
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x01) {
@@ -74,8 +76,10 @@ void counter_tick() {
             }
             else if ((tmpA & 0x03) == 0x02) counter_state = counter_init;
             else counter_state = counter_reset;
+            break;
         case counter_sub:
             counter_state = counter_dec;
+            break;
         case counter_dec:
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x01) counter_state = counter_init;
@@ -84,9 +88,11 @@ void counter_tick() {
                 hold_timer++;
             }
             else counter_state = counter_reset;
+            break;
         case counter_reset:
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else counter_state = counter_reset;
+            break;
         default: 
             counter_state = counter_init;
     }
@@ -123,8 +129,11 @@ void counter_tick() {
 
         case counter_reset:
             PORTB = 0x00;
+            hold_timer = 0;
+            break;
         default: 
             PORTB = 0;
+            hold_timer = 0;
     }
 
 }
