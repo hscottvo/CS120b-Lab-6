@@ -17,7 +17,7 @@ void TimerOn() {
 
     TCNT1 = 0;
 
-    _avr_timer_cntcurr = avr_timer_M;
+    _avr_timer_cntcurr = _avr_timer_M;
 
     SREG |= 0x80;
 }
