@@ -67,7 +67,7 @@ rotate_tick() {
             rotate_state = rotate_two;
             break;
         case(rotate_two):
-            rotate_state = rotate_zero;
+            rotate_state = rotate_one;
             break;
 
         default:
