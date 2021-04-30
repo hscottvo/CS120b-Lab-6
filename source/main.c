@@ -67,7 +67,7 @@ rotate_tick() {
             rotate_state = rotate_two;
             break;
         case(rotate_two):
-            rotate_state = rotate_one;
+            rotate_state = rotate_zero;
             break;
 
         default:
@@ -97,7 +97,7 @@ rotate_tick() {
 void main() {
     DDRB = 0xFF;
     PORTB = 0x00;
-    TimerSet(300);
+    TimerSet(1000);
     TimerOn();
     rotate_state = rotate_init;
     while(1) {
