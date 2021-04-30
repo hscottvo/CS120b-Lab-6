@@ -60,15 +60,18 @@ unsigned char hold_timer = 0;
 void counter_tick() {
     switch(counter_state) {
         case counter_init:
+        // checks with path to take
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x01) counter_state = counter_add;
             else if ((tmpA & 0x03) == 0x02) counter_state = counter_sub;
             else counter_state = counter_reset;
             break;
         case counter_add:
+        // this state is just for the increment only checking for PORTB current value
             counter_state = counter_inc;
             break;
         case counter_inc:
+        // if we are still holding, then we increment the tick counter, which is then used to determine whether we increment PORTB or not
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x01) {
                 counter_state = counter_inc;
@@ -78,9 +81,11 @@ void counter_tick() {
             else counter_state = counter_reset;
             break;
         case counter_sub:
+        // same as counter_add
             counter_state = counter_dec;
             break;
         case counter_dec:
+        // same as counter_inc
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x01) counter_state = counter_init;
             else if ((tmpA & 0x03) == 0x02) {
@@ -90,6 +95,7 @@ void counter_tick() {
             else counter_state = counter_reset;
             break;
         case counter_reset:
+        // waits for both buttons to be let go to account for human inconsistency
             if ((tmpA & 0x03) == 0x00) counter_state = counter_init;
             else counter_state = counter_reset;
             break;
@@ -106,6 +112,7 @@ void counter_tick() {
             }
             break;
         case counter_inc:
+        // checks for 9 because we use 1 tick to get here
             if (hold_timer >= 9) {
                 hold_timer = 0;
                 if (PORTB < 9) {
@@ -119,6 +126,7 @@ void counter_tick() {
             }
             break;
         case counter_dec:
+        // checks for 9 because we use 1 tick to get here
             if (hold_timer >= 9) {
                 hold_timer = 0;
                 if(PORTB > 0) {
