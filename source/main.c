@@ -108,9 +108,7 @@ void rotate_tick() {
             break;
         case(rotate_freeze):
         case(rotate_freeze_wait):
-            break;
         case(rotate_reset):
-            PORTB = 0x01;
             break;
         default:
             PORTB = 0;
